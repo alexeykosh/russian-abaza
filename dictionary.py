@@ -9,7 +9,7 @@ def get_urls():
     alph = ['А','Б', 'В', 'Г', 'Гв', 'Гъ', 'Гъв', 'Гъь', 'Гь', 'ГI', 'ГIв', 'Д', 'Дж', 'Джв', 'Джь', 'Дз', 'Е', 'Ё', 'Ж',
             'Жв', 'Жь', 'З', 'И', 'Й', 'К', 'Кв', 'Къ', 'Къв', 'Къь', 'Кь', 'КI', 'КIв', 'КIь', 'Л', 'Ль', 'М', 'Н',
             'О', 'П', 'ПI', 'Р', 'С',  'Т',  'Тл', 'Тш', 'ТI', 'У',  'Ф', 'Х', 'Хв', 'Хъ', 'Хъв', 'Хь', 'ХI', 'ХIв',
-            'Ц', 'ЦI', 'Ч', 'Чв', 'ЧI', 'ЧIв' ,'Ш', 'Шв', 'ШI', 'Щ', 'Ъ', 'Э', 'Ю', 'Я']
+            'Ц', 'ЦI', 'Ч', 'Чв', 'ЧI', 'ЧIв','Ш', 'Шв', 'ШI', 'Щ', 'Ъ', 'Э', 'Ю', 'Я']
     for item in alph:
         url = "http://www.abazinka.ru/ru/letter/%s?" % item
         urls.append(url)
@@ -38,7 +38,6 @@ def extract_words(urls):
 
 
 def making_urls(urls2):
-    ok_values = []
     urls_list = []
     keys = []
     values = []
@@ -56,20 +55,18 @@ def making_urls(urls2):
                                  '/39.0.2171.95 Safari/537.36'}
         soup_url = requests.get(url, headers=headers)
         soup = BeautifulSoup(soup_url.text, 'lxml')
-        for value in soup.select('.result'):
-            values.append(value.text)
-    for element in values:
-        element = re.sub('([1-9][1-9]?(.|\)))', '\n \\1', element)
-        element = re.sub('.+ .\. .\.', '', element)
-        ok_values.append(element)
-    d = {"normalized": keys, "meaning": ok_values}
+        for value in soup.select('body'):
+            element = re.sub('([1-9][1-9]?(.|\)))', '\n \\1', value.text)
+            element = re.sub('.+ .\. .\.', '', element)
+            element = re.sub(r'Search time:.+', '', element, flags=re.U | re.DOTALL)
+            values.append(element)
+    print(len(keys), len(values))
+    d = {"normalized": keys, "meaning": values}
     s = pd.DataFrame(d, columns=["normalized", "meaning"])
     file = open('russian_abaza.csv', 'w')
     s = s.drop_duplicates()
     s.to_csv(file, encoding='Windows-1251')
     file.close()
-    print(len(keys), len(ok_values))
-    print(s)
 
 
 def main():

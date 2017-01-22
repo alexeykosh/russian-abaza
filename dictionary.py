@@ -56,8 +56,8 @@ def making_urls(urls2):
         soup_url = requests.get(url, headers=headers)
         soup = BeautifulSoup(soup_url.text, 'lxml')
         for value in soup.select('body'):
-            element = re.sub('([1-9][1-9]?(.|\)))', '\n \\1', value.text)
-            element = re.sub('.+ .\. .\.', '', element)
+            element = re.sub(r'([1-9][1-9]?(.|\)))', '\n \\1', value.text)
+            element = re.sub(r'[A-Z]([a-z])* .\. .\.', '', element)
             element = re.sub(r'Search time:.+', '', element, flags=re.U | re.DOTALL)
             values.append(element)
     print(len(keys), len(values))

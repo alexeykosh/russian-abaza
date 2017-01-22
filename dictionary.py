@@ -61,7 +61,6 @@ def making_urls(urls2):
             element = re.sub(r'[A-Z]([a-z])* .\. .\.', ' ', element)
             element = re.sub(r'Search time:.+', '', element, flags=re.U | re.DOTALL)
             element = re.sub(r'(IX|IV|V?I|III|III?)\.', r'\\n' + '\\1', element)
-            element = re.sub(r'([а-ж]\))', r'\\n' + '\\1', element)
             values.append(element)
     print(len(keys), len(values))
     d = {"normalized": keys, "meaning": values}
